@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import re
 from typing import Any
 
 from addon.errors import BundleValidationError
@@ -91,6 +92,12 @@ def _normalize_note_type(payload: Any) -> NoteTypeSpec | None:
         )
 
     templates = [_normalize_template(item, index + 1) for index, item in enumerate(templates_payload)]
+    for template in templates:
+        if not _template_references_declared_field(template.afmt, fields):
+            raise BundleValidationError(
+                f"Template '{template.name}' back format must reference at least one "
+                "declared field."
+            )
     css = payload.get("css", "")
     if not isinstance(css, str):
         raise BundleValidationError("The bundle 'note_type.css' value must be a string.")
@@ -172,3 +179,30 @@ def _require_string_list(value: Any, label: str, allow_empty: bool = False) -> l
 def _ensure_dict(value: Any, label: str) -> None:
     if not isinstance(value, dict):
         raise BundleValidationError(f"{label} must be a JSON object.")
+
+
+_TEMPLATE_TOKEN_RE = re.compile(r"{{\s*(.*?)\s*}}")
+
+
+def _template_references_declared_field(template_text: str, field_names: list[str]) -> bool:
+    for token in _TEMPLATE_TOKEN_RE.findall(template_text):
+        candidate = _normalize_template_token(token)
+        if candidate in field_names:
+            return True
+    return False
+
+
+def _normalize_template_token(token: str) -> str:
+    token = token.strip()
+    if not token:
+        return ""
+
+    if token[0] in "#/^!":
+        token = token[1:].strip()
+    elif token[0] == "/":
+        token = token[1:].strip()
+
+    if ":" in token:
+        token = token.rsplit(":", 1)[-1].strip()
+
+    return token

@@ -205,6 +205,10 @@ def test_import_bundle_updates_existing_note_type_when_requested() -> None:
     assert collection.models.updated_ids == [7]
     assert collection.models.field_names(updated) == ["Front", "Back", "Extra"]
     assert updated["css"] == ".card { color: coral; }"
+    assert (
+        updated["tmpls"][0]["afmt"]
+        == "{{FrontSide}}<hr id=answer>{{Back}}{{#Extra}}<aside>{{Extra}}</aside>{{/Extra}}"
+    )
 
 
 def test_import_bundle_does_not_rewrite_identical_existing_note_type() -> None:

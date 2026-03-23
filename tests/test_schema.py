@@ -63,3 +63,30 @@ def test_normalize_bundle_rejects_note_field_missing_from_custom_note_type() -> 
                 ],
             }
         )
+
+
+def test_normalize_bundle_rejects_back_template_without_declared_field_references() -> None:
+    with pytest.raises(
+        BundleValidationError,
+        match="Template 'Card 1' back format must reference at least one declared field",
+    ):
+        normalize_bundle(
+            {
+                "version": 1,
+                "note_type": {
+                    "name": "Broken Basic",
+                    "fields": ["Front", "Back", "Extra"],
+                    "templates": [
+                        {
+                            "name": "Card 1",
+                            "qfmt": "{{Front}}",
+                            "afmt": '{{FrontSide}}<br><br><hr id="answer"><br><br><br><br><div class="extra"></div>',
+                        }
+                    ],
+                    "css": ".card { color: black; }",
+                },
+                "notes": [
+                    {"fields": {"Front": "Q", "Back": "A", "Extra": "More"}},
+                ],
+            }
+        )
