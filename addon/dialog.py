@@ -21,25 +21,25 @@ from addon.service import bundle_from_text, summarize_bundle
 _EXAMPLE_BUNDLE = """{
   "version": 1,
   "note_type": {
-    "name": "Beautiful Basic",
+    "name": "LLM Styled Basic",
     "fields": ["Front", "Back", "Extra"],
     "templates": [
       {
         "name": "Card 1",
-        "qfmt": "<section class='hero'>{{Front}}</section>",
-        "afmt": "{{FrontSide}}<hr id='answer'><section class='answer'>{{Back}}</section>{{#Extra}}<aside>{{Extra}}</aside>{{/Extra}}"
+        "qfmt": "<div class='card-shell'><div class='eyebrow'>Prompt</div><div class='front'>{{Front}}</div></div>",
+        "afmt": "<div class='card-shell'>{{FrontSide}}<div id='answer'></div><div class='back'>{{Back}}</div>{{#Extra}}<div class='extra'>{{Extra}}</div>{{/Extra}}</div>"
       }
     ],
-    "css": ".card { font-family: 'Georgia'; background: linear-gradient(180deg, #fffdf8, #f4efe1); color: #1f2933; }"
+    "css": ".card { font-family: Arial, sans-serif; font-size: 20px; text-align: left; color: #1f2937; background-color: #ffffff; line-height: 1.5; }\\n.card-shell { max-width: 42rem; margin: 0 auto; padding: 24px; }\\n.eyebrow { margin-bottom: 12px; font-size: 0.7em; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #2563eb; }\\n.front, .back { font-size: 1.1em; }\\n.extra { margin-top: 18px; padding-top: 14px; border-top: 1px solid #d6dde7; font-size: 0.95em; color: #52606d; }\\n#answer { display: block; height: 0; margin: 18px 0 0; }\\n.card.nightMode { background-color: #1f2937; color: #f9fafb; }\\n.nightMode .eyebrow { color: #93c5fd; }\\n.nightMode .extra { border-top-color: #52606d; color: #cbd5e1; }"
   },
   "notes": [
     {
       "fields": {
-        "Front": "<h1>What is the capital of Japan?</h1>",
-        "Back": "<p>Tokyo</p>",
-        "Extra": "<p>Population: about 14 million in the city proper.</p>"
+        "Front": "<p>Write the question, definition, or prompt here.</p>",
+        "Back": "<p>Write the answer or explanation here.</p>",
+        "Extra": "<ul><li>Optional supporting detail</li><li>Optional example</li></ul>"
       },
-      "tags": ["llm", "geography"]
+      "tags": ["llm", "example"]
     }
   ]
 }"""
@@ -170,7 +170,13 @@ class PasteCardsDialog(QDialog):
         note_word = "note" if summary.note_count == 1 else "notes"
         message = f"Added {summary.note_count} {note_word} from the pasted bundle."
         if summary.created_note_type:
-            return f"{message} Created note type '{summary.note_type_name}'."
+            return (
+                f"{message} Created note type '{summary.note_type_name}'. "
+                "Anki may request a full sync because the note type changed."
+            )
         if summary.updated_note_type:
-            return f"{message} Updated note type '{summary.note_type_name}'."
+            return (
+                f"{message} Updated note type '{summary.note_type_name}'. "
+                "Anki may request a full sync because the note type changed."
+            )
         return message

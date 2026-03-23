@@ -207,6 +207,55 @@ def test_import_bundle_updates_existing_note_type_when_requested() -> None:
     assert updated["css"] == ".card { color: coral; }"
 
 
+def test_import_bundle_does_not_rewrite_identical_existing_note_type() -> None:
+    collection = FakeCollection(
+        [
+            {
+                "id": 7,
+                "name": "Beautiful Basic",
+                "flds": [{"name": "Front"}, {"name": "Back"}, {"name": "Extra"}],
+                "tmpls": [
+                    {
+                        "name": "Card 1",
+                        "qfmt": "<article>{{Front}}</article>",
+                        "afmt": "{{FrontSide}}<hr id=answer>{{Back}}{{#Extra}}<aside>{{Extra}}</aside>{{/Extra}}",
+                    }
+                ],
+                "css": ".card { color: coral; }",
+            }
+        ]
+    )
+    bundle = CardBundle(
+        version=1,
+        note_type=NoteTypeSpec(
+            name="Beautiful Basic",
+            fields=["Front", "Back", "Extra"],
+            templates=[
+                TemplateSpec(
+                    name="Card 1",
+                    qfmt="<article>{{Front}}</article>",
+                    afmt="{{FrontSide}}<hr id=answer>{{Back}}{{#Extra}}<aside>{{Extra}}</aside>{{/Extra}}",
+                )
+            ],
+            css=".card { color: coral; }",
+            reuse_existing=True,
+        ),
+        notes=[NoteSpec(fields={"Front": "Q", "Back": "A", "Extra": "More"}, tags=[])],
+    )
+
+    summary = import_bundle(
+        collection=collection,
+        bundle=bundle,
+        selected_notetype_id=7,
+        selected_deck_id=100,
+        request_factory=FakeAddNoteRequest,
+    )
+
+    assert summary.created_note_type is False
+    assert summary.updated_note_type is False
+    assert collection.models.updated_ids == []
+
+
 def test_import_bundle_rejects_unknown_fields_for_selected_note_type() -> None:
     collection = FakeCollection(
         [

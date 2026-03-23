@@ -83,6 +83,8 @@ def _resolve_note_type(
     spec = bundle.note_type
     existing = collection.models.by_name(spec.name) if spec.reuse_existing else None
     if existing is not None:
+        if _note_type_matches_spec(collection.models, existing, spec):
+            return existing, False, False
         _apply_note_type_spec(collection.models, existing, spec)
         collection.models.update_dict(existing)
         return existing, False, True
@@ -108,3 +110,26 @@ def _apply_note_type_spec(models: Any, note_type: Any, spec: NoteTypeSpec) -> No
         template["qfmt"] = template_spec.qfmt
         template["afmt"] = template_spec.afmt
         models.add_template(note_type, template)
+
+
+def _note_type_matches_spec(models: Any, note_type: Any, spec: NoteTypeSpec) -> bool:
+    if note_type["name"] != spec.name:
+        return False
+    if note_type.get("css", "") != spec.css:
+        return False
+    if models.field_names(note_type) != spec.fields:
+        return False
+
+    existing_templates = note_type.get("tmpls", [])
+    if len(existing_templates) != len(spec.templates):
+        return False
+
+    for existing, expected in zip(existing_templates, spec.templates):
+        if existing.get("name") != expected.name:
+            return False
+        if existing.get("qfmt", "") != expected.qfmt:
+            return False
+        if existing.get("afmt", "") != expected.afmt:
+            return False
+
+    return True
