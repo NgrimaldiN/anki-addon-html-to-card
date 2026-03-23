@@ -62,6 +62,15 @@ def _install_fake_aqt_modules() -> dict[str, types.ModuleType]:
     class QDialogButtonBox:
         ButtonRole = _ButtonRole
 
+    class _Clipboard:
+        def setText(self, _text: str) -> None:
+            pass
+
+    class QApplication:
+        @staticmethod
+        def clipboard() -> _Clipboard:
+            return _Clipboard()
+
     class QPushButton:
         def __init__(self, *args, **kwargs) -> None:
             self.clicked = _Signal()
@@ -86,6 +95,7 @@ def _install_fake_aqt_modules() -> dict[str, types.ModuleType]:
     class QVBoxLayout:
         pass
 
+    fake_qt.QApplication = QApplication
     fake_qt.QDialogButtonBox = QDialogButtonBox
     fake_qt.QPushButton = QPushButton
     fake_qt.QDialog = QDialog

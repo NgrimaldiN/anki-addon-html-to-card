@@ -9,8 +9,13 @@ def test_example_bundle_defaults_to_native_anki_basic_structure() -> None:
 
     assert bundle.note_type is None
     assert bundle.notes[0].fields["Front"] == "Write the question, term, or prompt here."
-    assert bundle.notes[0].fields["Back"] == "Write the answer or explanation here."
+    assert (
+        bundle.notes[0].fields["Back"]
+        == "Write the answer or explanation here. Use \\n for intentional line breaks inside the string."
+    )
     assert bundle.notes[0].fields["Extra"] == "Optional detail, nuance, mnemonic, or example."
+    assert "CRITICAL JSON FORMATTING RULE" in EXAMPLE_BUNDLE_TEXT
+    assert "//" in EXAMPLE_BUNDLE_TEXT
 
 
 def test_llm_generation_guidance_prefers_native_output_but_allows_creativity() -> None:
@@ -18,3 +23,4 @@ def test_llm_generation_guidance_prefers_native_output_but_allows_creativity() -
     assert "fully custom HTML/CSS" in LLM_GENERATION_GUIDANCE
     assert "unless the user explicitly asks" in LLM_GENERATION_GUIDANCE
     assert "omit note_type" in LLM_GENERATION_GUIDANCE
+    assert "\\n" in LLM_GENERATION_GUIDANCE
