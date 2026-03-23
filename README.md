@@ -21,7 +21,7 @@ When asking another LLM to generate a bundle for this add-on, use this default b
 - By default, omit `note_type` so the bundle uses the note type currently selected in Anki Add Cards, but only when that selected note type is already a working note type such as `Basic`.
 - Keep the default output close to Anki's stock Front/Back behavior and minimal styling.
 - If the user wants something more distinctive, it is fine to return fully custom HTML/CSS, additional fields, richer layouts, and more original visual design.
-- Only include `note_type` when custom fields, templates, or CSS are actually needed.
+- If the output uses `Extra`, any field beyond `Front` / `Back`, custom templates, or custom CSS, include a complete `note_type` block so the cards work immediately on import.
 - Never place literal physical newlines, tabs, or other control characters inside JSON string values; keep each JSON string on one physical line and use escaped sequences like `\\n` or `\\t` when needed.
 - Escape every literal backslash inside JSON strings. For math or LaTeX-like text, write `\\\\gamma`, `\\\\pi`, `\\\\epsilon`, etc., or prefer Unicode symbols like `γ`, `π`, `ε`.
 
@@ -35,7 +35,8 @@ When asking another LLM to generate a bundle for this add-on, use this default b
   // For maximum compatibility, switch Anki Add Cards to a working note type like "Basic"
   // before using this default format.
   // Default to the note type already selected in Anki Add Cards.
-  // Omit "note_type" unless you truly need custom fields, templates, or CSS.
+  // Omit "note_type" only when you want a plain Basic-style card with existing fields.
+  // If you want "Extra", any new field, or custom HTML/CSS, include a full "note_type" block instead.
   "version": 1,
   "notes": [
     {
@@ -46,8 +47,7 @@ When asking another LLM to generate a bundle for this add-on, use this default b
         // Escape every literal backslash inside JSON strings.
         // For math or LaTeX-style commands, write \\\\gamma, \\\\pi, \\\\epsilon, etc.,
         // or use Unicode symbols like γ, π, ε.
-        "Back": "Write the answer or explanation here. Use \\n for intentional line breaks inside the string.",
-        "Extra": "Optional detail, nuance, mnemonic, or example."
+        "Back": "Write the answer or explanation here. Use \\n for intentional line breaks inside the string."
       },
       "tags": ["llm", "example"]
     }
@@ -62,6 +62,7 @@ When asking another LLM to generate a bundle for this add-on, use this default b
 ```
 
 If `note_type` is omitted, the add-on uses the note type currently selected in Add Cards.
+If you want an `Extra` field or a more original card design, include a full `note_type` block in the generated JSON.
 If that selected note type has a broken back template, the dialog will warn you before import and offer a one-click switch back to `Basic` when available.
 
 ## Local Development

@@ -13,8 +13,9 @@ LLM_GENERATION_GUIDANCE = (
     "behavior and minimal styling unless the user explicitly asks for more design. "
     "If the user wants something more distinctive, you may return fully custom "
     "HTML/CSS, additional fields, richer layouts, and more original visual design. "
-    "Only include note_type when custom fields, templates, or CSS are actually "
-    "needed. Return only one JSON object, with no trailing semicolon, no extra "
+    "If you use Extra, any field beyond Front/Back, custom templates, or custom "
+    "CSS, include a complete note_type block so the cards work immediately when "
+    "imported. Return only one JSON object, with no trailing semicolon, no extra "
     "wrapper braces, and no second object after it. CRITICAL JSON FORMATTING "
     "RULES: never place literal physical newlines, tabs, or other control "
     "characters inside JSON string values; keep each JSON string on one physical "
@@ -32,7 +33,8 @@ EXAMPLE_BUNDLE_TEXT = """{
   // For maximum compatibility, switch Anki Add Cards to a working note type like "Basic"
   // before using this default format.
   // Default to the note type already selected in Anki Add Cards.
-  // Omit "note_type" unless you truly need custom fields, templates, or CSS.
+  // Omit "note_type" only when you want a plain Basic-style card with existing fields.
+  // If you want "Extra", any new field, or custom HTML/CSS, include a full "note_type" block instead.
   "version": 1,
   "notes": [
     {
@@ -44,8 +46,7 @@ EXAMPLE_BUNDLE_TEXT = """{
         // Escape every literal backslash inside JSON strings.
         // For math or LaTeX-style commands, write \\\\gamma, \\\\pi, \\\\epsilon, etc.,
         // or use Unicode symbols like γ, π, ε.
-        "Back": "Write the answer or explanation here. Use \\\\n for intentional line breaks inside the string.",
-        "Extra": "Optional detail, nuance, mnemonic, or example."
+        "Back": "Write the answer or explanation here. Use \\\\n for intentional line breaks inside the string."
       },
       "tags": ["llm", "example"]
     }
@@ -60,6 +61,35 @@ EXAMPLE_BUNDLE_TEXT = """{
 }"""
 
 
+CUSTOM_NOTE_TYPE_EXAMPLE_TEXT = """{
+  // USE THIS SHAPE WHEN YOU WANT EXTRA FIELDS OR A MORE ORIGINAL CARD DESIGN.
+  "version": 1,
+  "note_type": {
+    "name": "LLM Creative Basic",
+    "fields": ["Front", "Back", "Extra"],
+    "templates": [
+      {
+        "name": "Card 1",
+        "qfmt": "<section class=\\"prompt\\">{{Front}}</section>",
+        "afmt": "{{FrontSide}}<hr id=\\"answer\\"><section class=\\"answer\\">{{Back}}</section>{{#Extra}}<section class=\\"extra\\">{{Extra}}</section>{{/Extra}}"
+      }
+    ],
+    "css": ".card { font-family: arial; font-size: 20px; text-align: center; color: black; background: white; } .extra { margin-top: 1em; color: #555; font-size: 0.9em; }",
+    "reuse_existing": true
+  },
+  "notes": [
+    {
+      "fields": {
+        "Front": "Write the question, term, or prompt here.",
+        "Back": "Write the answer or explanation here. Use \\\\n for intentional line breaks inside the string.",
+        "Extra": "Optional detail, nuance, mnemonic, or example."
+      },
+      "tags": ["llm", "example"]
+    }
+  ]
+}"""
+
+
 LLM_PROMPT_TEXT = f"""Generate Anki cards using the schema below.
 
 Output rules:
@@ -67,12 +97,19 @@ Output rules:
 - No prose before or after the JSON.
 - No trailing semicolon.
 - If you omit "note_type", assume Anki Add Cards is already set to a working note type such as "Basic".
+- If you use "Extra", any field beyond "Front"/"Back", custom templates, or custom CSS, include a complete "note_type" block.
+- If you want a super original card design, include a full "note_type" block so the cards work immediately on import.
 - Keep every JSON string value on one physical line.
 - Use \\n for line breaks inside string values.
 - Escape every backslash inside JSON strings.
 - For math, prefer Unicode like γ, π, ε when possible; otherwise write \\\\gamma, \\\\pi, \\\\epsilon.
 
-Schema example:
+Safe default example:
 ```jsonc
 {EXAMPLE_BUNDLE_TEXT}
+```
+
+Custom note_type example:
+```jsonc
+{CUSTOM_NOTE_TYPE_EXAMPLE_TEXT}
 ```"""
