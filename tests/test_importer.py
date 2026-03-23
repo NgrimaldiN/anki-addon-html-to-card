@@ -289,3 +289,40 @@ def test_import_bundle_rejects_unknown_fields_for_selected_note_type() -> None:
             selected_deck_id=100,
             request_factory=FakeAddNoteRequest,
         )
+
+
+def test_import_bundle_rejects_broken_selected_note_type_with_no_back_field_reference() -> None:
+    collection = FakeCollection(
+        [
+            {
+                "id": 99,
+                "name": "Broken LLM Basic",
+                "flds": [{"name": "Front"}, {"name": "Back"}, {"name": "Extra"}],
+                "tmpls": [
+                    {
+                        "name": "Card 1",
+                        "qfmt": "{{Front}}",
+                        "afmt": '{{FrontSide}}<br><br><hr id="answer"><br><br><br><br><div class="extra"></div>',
+                    }
+                ],
+                "css": "",
+            }
+        ]
+    )
+    bundle = CardBundle(
+        version=1,
+        note_type=None,
+        notes=[NoteSpec(fields={"Front": "Q", "Back": "A", "Extra": "More"}, tags=[])],
+    )
+
+    with pytest.raises(
+        BundleValidationError,
+        match="selected note type 'Broken LLM Basic' appears to have a broken back template",
+    ):
+        import_bundle(
+            collection=collection,
+            bundle=bundle,
+            selected_notetype_id=99,
+            selected_deck_id=100,
+            request_factory=FakeAddNoteRequest,
+        )

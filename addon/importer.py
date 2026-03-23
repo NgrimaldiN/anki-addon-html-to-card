@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from addon.errors import BundleValidationError
-from addon.schema import CardBundle, NoteTypeSpec
+from addon.schema import CardBundle, NoteTypeSpec, template_references_declared_field
 
 
 @dataclass(frozen=True)
@@ -78,6 +78,7 @@ def _resolve_note_type(
         note_type = collection.models.get(selected_notetype_id)
         if note_type is None:
             raise BundleValidationError("The selected Add Cards note type could not be found.")
+        _ensure_selected_note_type_has_renderable_back_template(collection.models, note_type)
         return note_type, False, False
 
     spec = bundle.note_type
@@ -133,3 +134,24 @@ def _note_type_matches_spec(models: Any, note_type: Any, spec: NoteTypeSpec) -> 
             return False
 
     return True
+
+
+def _ensure_selected_note_type_has_renderable_back_template(models: Any, note_type: Any) -> None:
+    field_names = models.field_names(note_type)
+    broken_templates: list[str] = []
+
+    for index, template in enumerate(note_type.get("tmpls", []), start=1):
+        if template_references_declared_field(template.get("afmt", ""), field_names):
+            continue
+        broken_templates.append(template.get("name") or f"Template {index}")
+
+    if not broken_templates:
+        return
+
+    rendered_templates = ", ".join(broken_templates)
+    raise BundleValidationError(
+        f"The selected note type '{note_type['name']}' appears to have a broken back template. "
+        f"Template(s) without any real field reference: {rendered_templates}. "
+        "Please switch Add Cards to a working note type like 'Basic', or include a complete "
+        "'note_type' block in the bundle to recreate the template."
+    )

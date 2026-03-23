@@ -93,7 +93,7 @@ def _normalize_note_type(payload: Any) -> NoteTypeSpec | None:
 
     templates = [_normalize_template(item, index + 1) for index, item in enumerate(templates_payload)]
     for template in templates:
-        if not _template_references_declared_field(template.afmt, fields):
+        if not template_references_declared_field(template.afmt, fields):
             raise BundleValidationError(
                 f"Template '{template.name}' back format must reference at least one "
                 "declared field."
@@ -184,7 +184,7 @@ def _ensure_dict(value: Any, label: str) -> None:
 _TEMPLATE_TOKEN_RE = re.compile(r"{{\s*(.*?)\s*}}")
 
 
-def _template_references_declared_field(template_text: str, field_names: list[str]) -> bool:
+def template_references_declared_field(template_text: str, field_names: list[str]) -> bool:
     for token in _TEMPLATE_TOKEN_RE.findall(template_text):
         candidate = _normalize_template_token(token)
         if candidate in field_names:
