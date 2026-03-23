@@ -20,6 +20,8 @@ class ImportSummary:
     note_type_name: str
     created_note_type: bool
     updated_note_type: bool
+    note_type_id: Any
+    changes: Any | None = None
 
 
 def import_bundle(
@@ -53,7 +55,7 @@ def import_bundle(
         note.tags = list(note_spec.tags)
         requests.append(request_factory(note=note, deck_id=selected_deck_id))
 
-    collection.add_notes(requests)
+    changes = collection.add_notes(requests)
 
     return ImportSummary(
         note_count=len(requests),
@@ -61,6 +63,8 @@ def import_bundle(
         note_type_name=note_type["name"],
         created_note_type=created_note_type,
         updated_note_type=updated_note_type,
+        note_type_id=note_type["id"],
+        changes=changes,
     )
 
 

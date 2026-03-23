@@ -10,14 +10,15 @@ Research and plan an Anki add-on that adds a button to the Add Cards window, let
 |---|---|---|
 | 1. Set up planning artifacts | complete | Planning files and repo-local research notes created |
 | 2. Research Anki APIs and patterns | complete | Official docs/source reviewed for hooks, models, decks, and packaging |
-| 3. Define add-on architecture and input format | in_progress | JSON bundle format and module layout drafted |
-| 4. Implement and validate | pending | Code starts after the research plan is accepted or complete |
+| 3. Define add-on architecture and input format | complete | JSON bundle format and module layout implemented |
+| 4. Implement and validate | complete | Add-on, tests, docs, and syntax validation finished |
 
 ## Open Questions
 
 - `add_cards_did_init` is the preferred Add Cards hook.
 - The first version should accept JSON bundles only.
 - Custom note type creation or update should happen only when the bundle explicitly includes `note_type`.
+- The implementation should keep Anki imports isolated to the UI layer so pure modules stay testable in a plain Python environment.
 
 ## Errors Encountered
 

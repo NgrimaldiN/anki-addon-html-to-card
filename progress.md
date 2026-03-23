@@ -12,3 +12,7 @@
 - Confirmed from upstream source that non-blocking note insertion can use `aqt.operations.note.add_note(parent=..., note=..., target_deck_id=...)`.
 - Confirmed from upstream source that bulk note insertion can use `CollectionOp(parent, lambda col: col.add_notes([...AddNoteRequest(...) ...]))`.
 - Added repo-local knowledge files in `.skills/` and `.agent/` to preserve the Anki-specific guidance and planned module structure.
+- Implemented a tested parser, schema normalizer, importer, and service layer for LLM card bundles.
+- Implemented the Anki UI integration with a new `Paste LLM Cards` button in Add Cards and a paste/import dialog.
+- Added packaging files: add-on root `__init__.py`, `manifest.json`, and `README.md`.
+- Verified the final build with `python3 -m pytest` and `python3 -m py_compile __init__.py addon/*.py tests/*.py`.

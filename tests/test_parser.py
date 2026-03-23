@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import pytest
+
+from addon.errors import BundleValidationError
 from addon.parser import parse_bundle_text
 
 
@@ -48,3 +51,15 @@ def test_parse_bundle_text_accepts_fenced_json_block() -> None:
 
     assert bundle["notes"][0]["fields"]["Back"] == "A"
     assert bundle["notes"][0]["tags"] == ["llm", "generated"]
+
+
+def test_parse_bundle_text_rejects_invalid_json_with_helpful_message() -> None:
+    with pytest.raises(BundleValidationError, match="valid JSON object"):
+        parse_bundle_text(
+            """
+            ```json
+            {
+              "notes": [
+            ```
+            """
+        )
