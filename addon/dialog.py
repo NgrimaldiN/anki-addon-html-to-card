@@ -14,35 +14,9 @@ from aqt.qt import (
 from aqt.utils import showWarning, tooltip
 
 from addon.errors import BundleError
+from addon.example_data import EXAMPLE_BUNDLE_TEXT, LLM_GENERATION_GUIDANCE
 from addon.importer import ImportSummary, import_bundle
 from addon.service import bundle_from_text, summarize_bundle
-
-
-_EXAMPLE_BUNDLE = """{
-  "version": 1,
-  "note_type": {
-    "name": "LLM Styled Basic",
-    "fields": ["Front", "Back", "Extra"],
-    "templates": [
-      {
-        "name": "Card 1",
-        "qfmt": "<div class='card-shell'><div class='eyebrow'>Prompt</div><div class='front'>{{Front}}</div></div>",
-        "afmt": "<div class='card-shell'>{{FrontSide}}<div id='answer'></div><div class='back'>{{Back}}</div>{{#Extra}}<div class='extra'>{{Extra}}</div>{{/Extra}}</div>"
-      }
-    ],
-    "css": ".card { font-family: Arial, sans-serif; font-size: 20px; text-align: left; color: #1f2937; background-color: #ffffff; line-height: 1.5; }\\n.card-shell { max-width: 42rem; margin: 0 auto; padding: 24px; }\\n.eyebrow { margin-bottom: 12px; font-size: 0.7em; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #2563eb; }\\n.front, .back { font-size: 1.1em; }\\n.extra { margin-top: 18px; padding-top: 14px; border-top: 1px solid #d6dde7; font-size: 0.95em; color: #52606d; }\\n#answer { display: block; height: 0; margin: 18px 0 0; }\\n.card.nightMode { background-color: #1f2937; color: #f9fafb; }\\n.nightMode .eyebrow { color: #93c5fd; }\\n.nightMode .extra { border-top-color: #52606d; color: #cbd5e1; }"
-  },
-  "notes": [
-    {
-      "fields": {
-        "Front": "<p>Write the question, definition, or prompt here.</p>",
-        "Back": "<p>Write the answer or explanation here.</p>",
-        "Extra": "<ul><li>Optional supporting detail</li><li>Optional example</li></ul>"
-      },
-      "tags": ["llm", "example"]
-    }
-  ]
-}"""
 
 
 class PasteCardsDialog(QDialog):
@@ -67,8 +41,12 @@ class PasteCardsDialog(QDialog):
         intro.setWordWrap(True)
         layout.addWidget(intro)
 
+        guidance = QLabel(LLM_GENERATION_GUIDANCE)
+        guidance.setWordWrap(True)
+        layout.addWidget(guidance)
+
         self.bundle_input = QPlainTextEdit(self)
-        self.bundle_input.setPlaceholderText(_EXAMPLE_BUNDLE)
+        self.bundle_input.setPlaceholderText(EXAMPLE_BUNDLE_TEXT)
         self.bundle_input.textChanged.connect(self._on_text_changed)
         layout.addWidget(self.bundle_input, 1)
 
@@ -104,7 +82,7 @@ class PasteCardsDialog(QDialog):
         self.status_label.setText("Bundle changed. Validate or import to continue.")
 
     def _load_example(self) -> None:
-        self.bundle_input.setPlainText(_EXAMPLE_BUNDLE)
+        self.bundle_input.setPlainText(EXAMPLE_BUNDLE_TEXT)
 
     def _validate_bundle(self) -> None:
         bundle = self._parse_current_bundle()

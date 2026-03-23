@@ -10,29 +10,37 @@ An Anki add-on that adds a `Paste LLM Cards` button to the Add Cards window. You
 - Adds one or many notes directly to the deck currently selected in Add Cards
 - Validates the payload before import
 
+## LLM Guidance
+
+When asking another LLM to generate a bundle for this add-on, use this default behavior:
+
+- Default to a native-looking Anki Basic card unless the user explicitly asks for a more designed or unusual visual result.
+- By default, keep the template close to Anki's stock Front/Back behavior, centered layout, and minimal styling.
+- If the user wants something more distinctive, it is fine to return fully custom HTML/CSS, additional fields, richer layouts, and more original visual design.
+
 ## Bundle Format
 
 ```json
 {
   "version": 1,
   "note_type": {
-    "name": "LLM Styled Basic",
+    "name": "LLM Basic",
     "fields": ["Front", "Back", "Extra"],
     "templates": [
       {
         "name": "Card 1",
-        "qfmt": "<div class='card-shell'><div class='eyebrow'>Prompt</div><div class='front'>{{Front}}</div></div>",
-        "afmt": "<div class='card-shell'>{{FrontSide}}<div id='answer'></div><div class='back'>{{Back}}</div>{{#Extra}}<div class='extra'>{{Extra}}</div>{{/Extra}}</div>"
+        "qfmt": "{{Front}}",
+        "afmt": "{{FrontSide}}\n\n<hr id=answer>\n\n{{Back}}{{#Extra}}\n\n<div class='extra'>{{Extra}}</div>{{/Extra}}"
       }
     ],
-    "css": ".card { font-family: Arial, sans-serif; font-size: 20px; text-align: left; color: #1f2937; background-color: #ffffff; line-height: 1.5; }\\n.card-shell { max-width: 42rem; margin: 0 auto; padding: 24px; }\\n.eyebrow { margin-bottom: 12px; font-size: 0.7em; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #2563eb; }\\n.front, .back { font-size: 1.1em; }\\n.extra { margin-top: 18px; padding-top: 14px; border-top: 1px solid #d6dde7; font-size: 0.95em; color: #52606d; }\\n#answer { display: block; height: 0; margin: 18px 0 0; }\\n.card.nightMode { background-color: #1f2937; color: #f9fafb; }\\n.nightMode .eyebrow { color: #93c5fd; }\\n.nightMode .extra { border-top-color: #52606d; color: #cbd5e1; }"
+    "css": ".card {\n  font-family: arial;\n  font-size: 20px;\n  line-height: 1.5;\n  text-align: center;\n  color: black;\n  background-color: white;\n}\n.extra {\n  margin-top: 0.75em;\n  color: #555;\n  font-size: 0.9em;\n}"
   },
   "notes": [
     {
       "fields": {
-        "Front": "<p>Write the question, definition, or prompt here.</p>",
-        "Back": "<p>Write the answer or explanation here.</p>",
-        "Extra": "<ul><li>Optional supporting detail</li><li>Optional example</li></ul>"
+        "Front": "Write the question, term, or prompt here.",
+        "Back": "Write the answer or explanation here.",
+        "Extra": "Optional detail, nuance, mnemonic, or example."
       },
       "tags": ["llm", "example"]
     }
