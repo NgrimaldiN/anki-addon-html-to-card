@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import pytest
 
 from addon.errors import BundleValidationError
-from addon.importer import import_bundle
+from addon.importer import assess_note_type_health, find_working_basic_note_type, import_bundle
 from addon.schema import CardBundle, NoteSpec, NoteTypeSpec, TemplateSpec
 
 
@@ -326,3 +326,51 @@ def test_import_bundle_rejects_broken_selected_note_type_with_no_back_field_refe
             selected_deck_id=100,
             request_factory=FakeAddNoteRequest,
         )
+
+
+def test_assess_note_type_health_marks_working_note_type_ready() -> None:
+    collection = FakeCollection(
+        [
+            {
+                "id": 42,
+                "name": "Basic",
+                "flds": [{"name": "Front"}, {"name": "Back"}],
+                "tmpls": [{"name": "Card 1", "qfmt": "{{Front}}", "afmt": "{{FrontSide}}<hr id=answer>{{Back}}"}],
+                "css": "",
+            }
+        ]
+    )
+
+    health = assess_note_type_health(
+        collection.models,
+        collection.models.get(42),
+    )
+
+    assert health.is_ready is True
+    assert health.broken_templates == ()
+
+
+def test_find_working_basic_note_type_returns_basic_when_it_is_healthy() -> None:
+    collection = FakeCollection(
+        [
+            {
+                "id": 42,
+                "name": "Basic",
+                "flds": [{"name": "Front"}, {"name": "Back"}],
+                "tmpls": [{"name": "Card 1", "qfmt": "{{Front}}", "afmt": "{{FrontSide}}<hr id=answer>{{Back}}"}],
+                "css": "",
+            },
+            {
+                "id": 99,
+                "name": "Broken LLM Basic",
+                "flds": [{"name": "Front"}, {"name": "Back"}],
+                "tmpls": [{"name": "Card 1", "qfmt": "{{Front}}", "afmt": "<div class='extra'></div>"}],
+                "css": "",
+            },
+        ]
+    )
+
+    note_type = find_working_basic_note_type(collection.models)
+
+    assert note_type is not None
+    assert note_type["id"] == 42

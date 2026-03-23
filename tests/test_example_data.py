@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from addon.example_data import EXAMPLE_BUNDLE_TEXT, LLM_GENERATION_GUIDANCE
+from addon.example_data import EXAMPLE_BUNDLE_TEXT, LLM_GENERATION_GUIDANCE, LLM_PROMPT_TEXT
 from addon.service import bundle_from_text
 
 
@@ -35,3 +35,10 @@ def test_example_bundle_text_warns_about_json_wrapping_and_math_escaping() -> No
     assert "RETURN ONLY THIS JSON OBJECT" in EXAMPLE_BUNDLE_TEXT
     assert 'working note type like "Basic"' in EXAMPLE_BUNDLE_TEXT
     assert "\\\\gamma" in EXAMPLE_BUNDLE_TEXT
+
+
+def test_llm_prompt_text_is_a_copyable_strict_output_prompt() -> None:
+    assert "Return only one fenced ```json``` block." in LLM_PROMPT_TEXT
+    assert 'If you omit "note_type"' in LLM_PROMPT_TEXT
+    assert "Schema example:" in LLM_PROMPT_TEXT
+    assert EXAMPLE_BUNDLE_TEXT in LLM_PROMPT_TEXT

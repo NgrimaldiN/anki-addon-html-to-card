@@ -5,7 +5,9 @@ An Anki add-on that adds a `Paste LLM Cards` button to the Add Cards window. You
 ## What It Does
 
 - Adds a new button in the Add Cards window
+- Shows the currently selected deck and note type, plus a quick health check
 - Accepts raw JSON or a fenced ` ```json ` / ` ```jsonc ` block
+- Copies a strict `Copy LLM Prompt` prompt for other models in one click
 - Optionally creates or updates a custom note type with fields, templates, and CSS
 - Adds one or many notes directly to the deck currently selected in Add Cards
 - Validates the payload before import
@@ -60,6 +62,7 @@ When asking another LLM to generate a bundle for this add-on, use this default b
 ```
 
 If `note_type` is omitted, the add-on uses the note type currently selected in Add Cards.
+If that selected note type has a broken back template, the dialog will warn you before import and offer a one-click switch back to `Basic` when available.
 
 ## Local Development
 

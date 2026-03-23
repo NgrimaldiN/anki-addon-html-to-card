@@ -24,6 +24,12 @@ class ImportSummary:
     changes: Any | None = None
 
 
+@dataclass(frozen=True)
+class NoteTypeHealth:
+    is_ready: bool
+    broken_templates: tuple[str, ...] = ()
+
+
 def import_bundle(
     *,
     collection: Any,
@@ -137,6 +143,23 @@ def _note_type_matches_spec(models: Any, note_type: Any, spec: NoteTypeSpec) -> 
 
 
 def _ensure_selected_note_type_has_renderable_back_template(models: Any, note_type: Any) -> None:
+    health = assess_note_type_health(models, note_type)
+    if health.is_ready:
+        return
+
+    rendered_templates = ", ".join(health.broken_templates)
+    raise BundleValidationError(
+        f"The selected note type '{note_type['name']}' appears to have a broken back template. "
+        f"Template(s) without any real field reference: {rendered_templates}. "
+        "Please switch Add Cards to a working note type like 'Basic', or include a complete "
+        "'note_type' block in the bundle to recreate the template."
+    )
+
+
+def assess_note_type_health(models: Any, note_type: Any) -> NoteTypeHealth:
+    if note_type is None:
+        return NoteTypeHealth(is_ready=False, broken_templates=("Unknown note type",))
+
     field_names = models.field_names(note_type)
     broken_templates: list[str] = []
 
@@ -145,13 +168,17 @@ def _ensure_selected_note_type_has_renderable_back_template(models: Any, note_ty
             continue
         broken_templates.append(template.get("name") or f"Template {index}")
 
-    if not broken_templates:
-        return
-
-    rendered_templates = ", ".join(broken_templates)
-    raise BundleValidationError(
-        f"The selected note type '{note_type['name']}' appears to have a broken back template. "
-        f"Template(s) without any real field reference: {rendered_templates}. "
-        "Please switch Add Cards to a working note type like 'Basic', or include a complete "
-        "'note_type' block in the bundle to recreate the template."
+    return NoteTypeHealth(
+        is_ready=not broken_templates,
+        broken_templates=tuple(broken_templates),
     )
+
+
+def find_working_basic_note_type(models: Any) -> Any | None:
+    note_type = models.by_name("Basic")
+    if note_type is None:
+        return None
+    health = assess_note_type_health(models, note_type)
+    if not health.is_ready:
+        return None
+    return note_type

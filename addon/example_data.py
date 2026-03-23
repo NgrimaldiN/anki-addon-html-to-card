@@ -58,3 +58,21 @@ EXAMPLE_BUNDLE_TEXT = """{
   // - more original visual design
   // Prefer strict JSON in the final answer even though these comments explain the format.
 }"""
+
+
+LLM_PROMPT_TEXT = f"""Generate Anki cards using the schema below.
+
+Output rules:
+- Return only one fenced ```json``` block.
+- No prose before or after the JSON.
+- No trailing semicolon.
+- If you omit "note_type", assume Anki Add Cards is already set to a working note type such as "Basic".
+- Keep every JSON string value on one physical line.
+- Use \\n for line breaks inside string values.
+- Escape every backslash inside JSON strings.
+- For math, prefer Unicode like γ, π, ε when possible; otherwise write \\\\gamma, \\\\pi, \\\\epsilon.
+
+Schema example:
+```jsonc
+{EXAMPLE_BUNDLE_TEXT}
+```"""
