@@ -15,17 +15,23 @@ An Anki add-on that adds a `Paste LLM Cards` button to the Add Cards window. You
 When asking another LLM to generate a bundle for this add-on, use this default behavior:
 
 - Default to a native-looking Anki Basic card unless the user explicitly asks for a more designed or unusual visual result.
-- By default, omit `note_type` so the bundle uses the note type currently selected in Anki Add Cards.
+- Return only one JSON object or one fenced ` ```json ` block, with no prose before or after it.
+- By default, omit `note_type` so the bundle uses the note type currently selected in Anki Add Cards, but only when that selected note type is already a working note type such as `Basic`.
 - Keep the default output close to Anki's stock Front/Back behavior and minimal styling.
 - If the user wants something more distinctive, it is fine to return fully custom HTML/CSS, additional fields, richer layouts, and more original visual design.
 - Only include `note_type` when custom fields, templates, or CSS are actually needed.
 - Never place literal physical newlines, tabs, or other control characters inside JSON string values; keep each JSON string on one physical line and use escaped sequences like `\\n` or `\\t` when needed.
+- Escape every literal backslash inside JSON strings. For math or LaTeX-like text, write `\\\\gamma`, `\\\\pi`, `\\\\epsilon`, etc., or prefer Unicode symbols like `γ`, `π`, `ε`.
 
 ## Bundle Format
 
 ```jsonc
 {
   // FORMAT EXAMPLE FOR ANOTHER LLM:
+  // RETURN ONLY THIS JSON OBJECT (or one fenced ```json block) and nothing else.
+  // No prose before or after the JSON. No trailing semicolon.
+  // For maximum compatibility, switch Anki Add Cards to a working note type like "Basic"
+  // before using this default format.
   // Default to the note type already selected in Anki Add Cards.
   // Omit "note_type" unless you truly need custom fields, templates, or CSS.
   "version": 1,
@@ -35,6 +41,9 @@ When asking another LLM to generate a bundle for this add-on, use this default b
         "Front": "Write the question, term, or prompt here.",
         // Keep every JSON string on a single physical line.
         // If you need a visual line break inside a value, write \\n instead of pressing Enter.
+        // Escape every literal backslash inside JSON strings.
+        // For math or LaTeX-style commands, write \\\\gamma, \\\\pi, \\\\epsilon, etc.,
+        // or use Unicode symbols like γ, π, ε.
         "Back": "Write the answer or explanation here. Use \\n for intentional line breaks inside the string.",
         "Extra": "Optional detail, nuance, mnemonic, or example."
       },

@@ -121,6 +121,27 @@ def test_parse_bundle_text_preserves_comment_markers_inside_strings() -> None:
     assert bundle["notes"][0]["fields"]["Back"] == "Literal /* keep me */ text"
 
 
+def test_parse_bundle_text_repairs_invalid_latex_backslashes_inside_strings() -> None:
+    bundle = parse_bundle_text(
+        r"""
+        {
+          "version": 1,
+          "notes": [
+            {
+              "fields": {
+                "Front": "What does \epsilon mean?",
+                "Back": "Use \gamma, \pi, and \mathbb{R} in the answer."
+              }
+            }
+          ]
+        }
+        """
+    )
+
+    assert bundle["notes"][0]["fields"]["Front"] == "What does \\epsilon mean?"
+    assert bundle["notes"][0]["fields"]["Back"] == "Use \\gamma, \\pi, and \\mathbb{R} in the answer."
+
+
 def test_parse_bundle_text_rejects_invalid_json_with_helpful_message() -> None:
     with pytest.raises(BundleValidationError, match="valid JSON object"):
         parse_bundle_text(
@@ -131,3 +152,12 @@ def test_parse_bundle_text_rejects_invalid_json_with_helpful_message() -> None:
             ```
             """
         )
+
+
+def test_parse_bundle_text_reports_extra_data_with_json_only_hint() -> None:
+    with pytest.raises(BundleValidationError) as error:
+        parse_bundle_text('{"version": 1, "notes": []};')
+
+    message = str(error.value)
+    assert "Extra data" in message
+    assert "Return only one JSON object" in message

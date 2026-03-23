@@ -24,3 +24,14 @@ def test_llm_generation_guidance_prefers_native_output_but_allows_creativity() -
     assert "unless the user explicitly asks" in LLM_GENERATION_GUIDANCE
     assert "omit note_type" in LLM_GENERATION_GUIDANCE
     assert "\\n" in LLM_GENERATION_GUIDANCE
+    assert "Return only one fenced json block or one raw JSON object" in LLM_GENERATION_GUIDANCE
+    assert "select Anki's working 'Basic' note type first" in LLM_GENERATION_GUIDANCE
+    assert "\\\\gamma" in LLM_GENERATION_GUIDANCE
+    assert "Return only one JSON object" in LLM_GENERATION_GUIDANCE
+    assert "no trailing semicolon" in LLM_GENERATION_GUIDANCE
+
+
+def test_example_bundle_text_warns_about_json_wrapping_and_math_escaping() -> None:
+    assert "RETURN ONLY THIS JSON OBJECT" in EXAMPLE_BUNDLE_TEXT
+    assert 'working note type like "Basic"' in EXAMPLE_BUNDLE_TEXT
+    assert "\\\\gamma" in EXAMPLE_BUNDLE_TEXT
