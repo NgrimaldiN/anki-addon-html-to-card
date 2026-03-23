@@ -15,26 +15,16 @@ An Anki add-on that adds a `Paste LLM Cards` button to the Add Cards window. You
 When asking another LLM to generate a bundle for this add-on, use this default behavior:
 
 - Default to a native-looking Anki Basic card unless the user explicitly asks for a more designed or unusual visual result.
-- By default, keep the template close to Anki's stock Front/Back behavior, centered layout, and minimal styling.
+- By default, omit `note_type` so the bundle uses the note type currently selected in Anki Add Cards.
+- Keep the default output close to Anki's stock Front/Back behavior and minimal styling.
 - If the user wants something more distinctive, it is fine to return fully custom HTML/CSS, additional fields, richer layouts, and more original visual design.
+- Only include `note_type` when custom fields, templates, or CSS are actually needed.
 
 ## Bundle Format
 
 ```json
 {
   "version": 1,
-  "note_type": {
-    "name": "LLM Basic",
-    "fields": ["Front", "Back", "Extra"],
-    "templates": [
-      {
-        "name": "Card 1",
-        "qfmt": "{{Front}}",
-        "afmt": "{{FrontSide}}\n\n<hr id=answer>\n\n{{Back}}{{#Extra}}\n\n<div class='extra'>{{Extra}}</div>{{/Extra}}"
-      }
-    ],
-    "css": ".card {\n  font-family: arial;\n  font-size: 20px;\n  line-height: 1.5;\n  text-align: center;\n  color: black;\n  background-color: white;\n}\n.extra {\n  margin-top: 0.75em;\n  color: #555;\n  font-size: 0.9em;\n}"
-  },
   "notes": [
     {
       "fields": {
