@@ -20,9 +20,11 @@ LLM_GENERATION_GUIDANCE = (
     "RULES: never place literal physical newlines, tabs, or other control "
     "characters inside JSON string values; keep each JSON string on one physical "
     "line and use escaped sequences like \\n or \\t when you need formatting. "
-    "Escape every literal backslash inside JSON strings; for math or LaTeX-style "
-    "commands, write \\\\gamma, \\\\pi, \\\\epsilon, etc., or prefer Unicode "
-    "symbols like γ, π, ε."
+    "For math, use normal LaTeX/MathJax-style notation such as $V^\\\\pi(s)$, "
+    "$\\\\gamma$, $\\\\epsilon$, $\\\\mathbb{E}[X]$, or $\\\\mathbb{P}(A)$. "
+    "Do not drop commands like \\\\mathbb{E} or \\\\mathbb{P} when you want "
+    "blackboard-bold symbols. "
+    "Because this is JSON, escape every literal backslash inside JSON strings."
 )
 
 
@@ -43,9 +45,10 @@ EXAMPLE_BUNDLE_TEXT = """{
         // CRITICAL JSON FORMATTING RULE:
         // Keep every JSON string on a single physical line.
         // If you need a visual line break inside a value, write \\n instead of pressing Enter.
-        // Escape every literal backslash inside JSON strings.
-        // For math or LaTeX-style commands, write \\\\gamma, \\\\pi, \\\\epsilon, etc.,
-        // or use Unicode symbols like γ, π, ε.
+        // For math, use normal LaTeX/MathJax-style notation like $V^\\\\pi(s)$, $\\\\gamma$,
+        // $\\\\mathbb{E}[X]$, or $\\\\mathbb{P}(A)$.
+        // Do not forget commands like \\\\mathbb{E} or \\\\mathbb{P} when you want those symbols.
+        // Because this is JSON, escape every literal backslash inside string values.
         "Back": "Write the answer or explanation here. Use \\\\n for intentional line breaks inside the string."
       },
       "tags": ["llm", "example"]
@@ -101,8 +104,9 @@ Output rules:
 - If you want a super original card design, include a full "note_type" block so the cards work immediately on import.
 - Keep every JSON string value on one physical line.
 - Use \\n for line breaks inside string values.
-- Escape every backslash inside JSON strings.
-- For math, prefer Unicode like γ, π, ε when possible; otherwise write \\\\gamma, \\\\pi, \\\\epsilon.
+- For math, use normal LaTeX/MathJax notation inside JSON strings, for example $V^\\\\pi(s)$, $\\\\gamma$, $\\\\epsilon$, $\\\\mathbb{{E}}[X]$, and $\\\\mathbb{{P}}(A)$.
+- Do not forget commands like \\\\mathbb{{E}} and \\\\mathbb{{P}} when you want blackboard-bold expectation/probability symbols.
+- Because this is JSON, escape every backslash inside string values.
 
 Safe default example:
 ```jsonc

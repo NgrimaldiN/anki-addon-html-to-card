@@ -23,7 +23,9 @@ When asking another LLM to generate a bundle for this add-on, use this default b
 - If the user wants something more distinctive, it is fine to return fully custom HTML/CSS, additional fields, richer layouts, and more original visual design.
 - If the output uses `Extra`, any field beyond `Front` / `Back`, custom templates, or custom CSS, include a complete `note_type` block so the cards work immediately on import.
 - Never place literal physical newlines, tabs, or other control characters inside JSON string values; keep each JSON string on one physical line and use escaped sequences like `\\n` or `\\t` when needed.
-- Escape every literal backslash inside JSON strings. For math or LaTeX-like text, write `\\\\gamma`, `\\\\pi`, `\\\\epsilon`, etc., or prefer Unicode symbols like `γ`, `π`, `ε`.
+- For math, use normal LaTeX/MathJax notation inside JSON strings, for example `$V^\\\\pi(s)$`, `$\\\\gamma$`, `$\\\\epsilon$`, `$\\\\mathbb{E}[X]$`, and `$\\\\mathbb{P}(A)$`.
+- Do not forget commands like `\\\\mathbb{E}` and `\\\\mathbb{P}` when you want blackboard-bold expectation/probability symbols.
+- Because this is JSON, escape every literal backslash inside string values.
 
 ## Bundle Format
 
@@ -44,9 +46,10 @@ When asking another LLM to generate a bundle for this add-on, use this default b
         "Front": "Write the question, term, or prompt here.",
         // Keep every JSON string on a single physical line.
         // If you need a visual line break inside a value, write \\n instead of pressing Enter.
-        // Escape every literal backslash inside JSON strings.
-        // For math or LaTeX-style commands, write \\\\gamma, \\\\pi, \\\\epsilon, etc.,
-        // or use Unicode symbols like γ, π, ε.
+        // For math, use normal LaTeX/MathJax-style notation like $V^\\\\pi(s)$, $\\\\gamma$,
+        // $\\\\mathbb{E}[X]$, or $\\\\mathbb{P}(A)$.
+        // Do not forget commands like \\\\mathbb{E} or \\\\mathbb{P} when you want those symbols.
+        // Because this is JSON, escape every literal backslash inside string values.
         "Back": "Write the answer or explanation here. Use \\n for intentional line breaks inside the string."
       },
       "tags": ["llm", "example"]
