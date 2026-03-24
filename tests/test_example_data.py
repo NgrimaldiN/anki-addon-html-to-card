@@ -41,9 +41,11 @@ def test_llm_generation_guidance_prefers_native_output_but_allows_creativity() -
     assert "\\n" in LLM_GENERATION_GUIDANCE
     assert "Return only one fenced json block or one raw JSON object" in LLM_GENERATION_GUIDANCE
     assert "select Anki's working 'Basic' note type first" in LLM_GENERATION_GUIDANCE
-    assert "$V^\\\\pi(s)$" in LLM_GENERATION_GUIDANCE
+    assert "\\\\(" in LLM_GENERATION_GUIDANCE
+    assert "\\\\[" in LLM_GENERATION_GUIDANCE
     assert "\\\\mathbb{E}" in LLM_GENERATION_GUIDANCE
     assert "\\\\mathbb{P}" in LLM_GENERATION_GUIDANCE
+    assert "Do not use \\n to make math render" in LLM_GENERATION_GUIDANCE
     assert "Return only one JSON object" in LLM_GENERATION_GUIDANCE
     assert "no trailing semicolon" in LLM_GENERATION_GUIDANCE
 
@@ -53,15 +55,18 @@ def test_example_bundle_text_warns_about_json_wrapping_and_math_escaping() -> No
     assert 'working note type like "Basic"' in EXAMPLE_BUNDLE_TEXT
     assert 'If you want "Extra"' in EXAMPLE_BUNDLE_TEXT
     assert "\\\\mathbb{E}" in EXAMPLE_BUNDLE_TEXT
+    assert "\\\\(" in EXAMPLE_BUNDLE_TEXT
 
 
 def test_llm_prompt_text_is_a_copyable_strict_output_prompt() -> None:
     assert "Return only one fenced ```json``` block." in LLM_PROMPT_TEXT
     assert 'If you omit "note_type"' in LLM_PROMPT_TEXT
     assert 'If you use "Extra", any field beyond "Front"/"Back"' in LLM_PROMPT_TEXT
-    assert "$V^\\\\pi(s)$" in LLM_PROMPT_TEXT
+    assert "\\\\(" in LLM_PROMPT_TEXT
+    assert "\\\\[" in LLM_PROMPT_TEXT
     assert "\\\\mathbb{E}" in LLM_PROMPT_TEXT
     assert "\\\\mathbb{P}" in LLM_PROMPT_TEXT
+    assert "Do not use \\n to make math render" in LLM_PROMPT_TEXT
     assert "Safe default example:" in LLM_PROMPT_TEXT
     assert "Custom note_type example:" in LLM_PROMPT_TEXT
     assert EXAMPLE_BUNDLE_TEXT in LLM_PROMPT_TEXT
